@@ -1,0 +1,295 @@
+[
+  {
+    "name": "proba",
+    "points": [
+      {
+        "x": 373.3333330154419,
+        "y": 270.3333511352539,
+        "name": "wa",
+        "lead": "wadwawadawdaw",
+        "follow": "wa",
+        "both": "wa",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#d51010",
+        "description": ""
+      },
+      {
+        "x": 514.0000200271606,
+        "y": 99.00000762939453,
+        "name": "wa",
+        "lead": "wadwawadawdaw",
+        "follow": "wa",
+        "both": "wa",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#d51010",
+        "description": ""
+      },
+      {
+        "x": 659.3333330154419,
+        "y": 206.3333511352539,
+        "name": "waddwadw",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 558.6667070388794,
+        "y": 255.00000762939453,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 492.00002002716064,
+        "y": 313.66666412353516,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      }
+    ],
+    "closed": false,
+    "edit": true,
+    "selected": 2
+  },
+  {
+    "name": "dsada",
+    "points": [
+      {
+        "x": 446.00002002716064,
+        "y": 134.3333282470703,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 446.66667652130127,
+        "y": 187.00001525878906,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      }
+    ],
+    "closed": false,
+    "edit": true,
+    "selected": 1
+  },
+  {
+    "name": "a",
+    "points": [
+      {
+        "x": 7.3333330154418945,
+        "y": 7.0000152587890625,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 3.3333330154418945,
+        "y": 232.3333282470703,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 676.6667070388794,
+        "y": 215.6666717529297,
+        "name": "Chasse",
+        "lead": "wa",
+        "follow": "wa",
+        "both": "wa",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#400707",
+        "description": "Szybkie kroki boczne w lewo lub w prawo."
+      },
+      {
+        "x": 761.3333330154419,
+        "y": 11.666671752929688,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 404.00002002716064,
+        "y": 1.6666717529296875,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      }
+    ],
+    "closed": false,
+    "edit": true,
+    "selected": 2
+  },
+  {
+    "name": "as",
+    "points": [
+      {
+        "x": 492.00002002716064,
+        "y": 58.33332824707031,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 402.00002002716064,
+        "y": 109.00001525878906,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 393.3333330154419,
+        "y": 123.66667175292969,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      }
+    ],
+    "closed": false,
+    "edit": true,
+    "selected": 2
+  },
+  {
+    "name": "walc100",
+    "points": [
+      {
+        "x": 325.78707218170166,
+        "y": 99.35185241699219,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 252.45372867584229,
+        "y": 223.05555725097656,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 449.4907464981079,
+        "y": 270.46302795410156,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      },
+      {
+        "x": 502.8241205215454,
+        "y": 137.12965393066406,
+        "name": "",
+        "lead": "",
+        "follow": "",
+        "both": "",
+        "link": "",
+        "bend": 0,
+        "bendPos": 50,
+        "color": "#7dd3fc",
+        "description": ""
+      }
+    ],
+    "closed": false,
+    "edit": true,
+    "selected": 3,
+    "addPointsEnabled": true,
+    "dragEnabled": true,
+    "dragging": null,
+    "figureSearchTerm": "",
+    "figureSortAsc": true,
+    "library": []
+  }
+]

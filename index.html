@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Choreo Planner – Ł&M</title>
+  <!-- podłączenie CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">Ł&amp;M</div>
+    <div>
+      <h1 class="title">Choreo Planner – Ł&amp;M</h1>
+      <p class="subtitle">Edytor układów dla tańców towarzyskich (ballroom)</p>
+    </div>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div>
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <button id="newBtn" class="btn">Nowy taniec</button>
+      <button id="saveBtn" class="btn primary">Zapisz jako</button>
+      <button id="openBtn" class="btn">Moje układy</button>
+      <button id="editBtn" class="btn">Tryb edycji</button>
+      <button id="toggleAddBtn" class="btn">Dodawanie punktów: OFF</button>
+      <button id="toggleDragBtn" class="btn toggled">Przesuwanie punktów: OFF</button>
+      <button id="deleteSelectedBtn" class="btn danger">Usuń wybrany punkt</button>
+      <button id="closeBtn" class="btn">Zamknij ścieżkę</button>
+      <button id="toggleSnapBtn" class="btn">Przyciąganie kątów: OFF</button>
+      <span class="spacer"></span>
+      <button id="clearBtn" class="btn danger">Wyczyść</button>
+    </div>
+
+    <!-- STAGE -->
+    <div class="stage-wrap card" style="margin-top:10px">
+      <div class="stage-header">
+        <div>Parkiet / układ: <strong id="danceName">(bez nazwy)</strong></div>
+        <div class="hint">Kliknij segment, by wstawić punkt. Klik na parkiet doda nowy (gdy Dodawanie=ON). Klik kropkę wybiera, a gdy Przesuwanie=ON – przeciąga.</div>
+      </div>
+      <div class="stage"><svg id="stageSvg" xmlns="http://www.w3.org/2000/svg"></svg></div>
+      <div class="legend">Trójkąt = start • numer/nazwa = kolejność • suwaki/uchwyty modyfikują krzywe</div>
+    </div>
+  </div>
+
+  <!-- SIDE PANEL -->
+  <div class="card">
+  <h3 style="display:flex; align-items:center; justify-content:space-between; margin:0;">
+    <span>Wybrana figura / punkt</span>
+    
+    
+  </h3>
+  <!-- reszta formularza -->
+
+
+<div class="content" style="display:flex; align-items:center;">
+  
+  <label style="display:flex; align-items:center; gap:4px; margin-left:auto;">
+    <input type="checkbox" id="editMode"> Tryb edycji
+  </label>
+<label style="display:flex; align-items:center; gap:6px; margin:0;">
+      <input type="checkbox" id="newFigMode"> Tworzę nową figurę
+    </label>
+</div>
+
+
+
+
+        <div style="display:flex; gap:6px; align-items:center">
+  <div style="flex:0 0 40px">
+    <label>Nr</label>
+    <input id="selIndex" disabled>
+  </div>
+  <div style="flex:1; display:flex; align-items:center; gap:6px">
+    <div style="flex:1; display:flex; flex-direction:column">
+      <label>Nazwa figury</label>
+      <input id="selName" placeholder="np. Natural Turn">
+    </div>
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <label>Kolor figury</label>
+      <input id="selColor" type="color" value="#7dd3fc" style="width:36px; height:36px; border-radius:6px; border:0; padding:0">
+    </div>
+  </div>
+</div>
+
+
+        
+
+        <label>Odchylenie linii</label>
+        <div class="range-row">
+          <input id="bendRange" type="range" min="-300" max="300" step="1">
+          <button id="resetBendBtn" class="btn tiny">Reset</button>
+        </div>
+
+        <label>Pozycja odchylenia</label>
+
+        
+        <div class="range-row">
+          <input id="bendPosRange" type="range" min="0" max="100" step="1">
+          <button id="resetBendPosBtn" class="btn tiny">Reset</button>
+        </div>
+<a id="selLinkRead" target="_blank" style="color:#38bdf8; text-decoration:underline; display:none"></a>
+        <label>Komentarz – partner</label><textarea id="selLead"></textarea>
+        <label>Komentarz – partnerka</label><textarea id="selFollow"></textarea>
+        <label>Komentarz – para</label><textarea id="selBoth"></textarea>
+<label>Opis figury</label>
+<textarea id="selDesc" placeholder="Opis figury..."></textarea>
+
+       <div style="display:flex; align-items:center; gap:6px;">
+<input id="selLink" placeholder="https://www.youtube.com/..." style="flex:1">
+<!-- Jeden element do odczytu linku -->
+
+</div>
+
+
+
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <button id="updatePointBtn" class="btn success" style="flex:1">Zapisz figurę</button>
+        </div>
+      
+    
+
+    <!-- LISTA FIGUR -->
+    <div class="card" style="margin-top:12px">
+      <h3>Lista figur</h3>
+      <div class="content">
+        <div class="tabs">
+          <div class="tab active" data-tab="recent">Ostatnio używane</div>
+          <div class="tab" data-tab="custom">Własne</div>
+          <div class="tab" data-tab="all">Oficjalne</div>
+          
+        </div>
+
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <input id="searchFigure" placeholder="Szukaj figury..." style="flex:1;padding:4px 6px;border-radius:6px;border:1px solid rgba(0,0,0,0.2)">
+          <button id="sortFigureBtn" class="btn tiny">Sort A→Z</button>
+        </div>
+
+
+        <ul id="figureList" class="list"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Moje układy -->
+<div id="libraryModal" class="modal-backdrop">
+  <div class="modal">
+    <div class="head">
+      <div style="font-weight:800">Moje układy</div>
+      <div class="actions">
+        <button id="saveCurrentBtn" class="btn primary">Zapisz bieżący</button>
+        <button id="copyShareBtn" class="btn">Skopiuj link</button>
+        <button id="closeLibBtn" class="btn danger">Zamknij</button>
+        
+      </div>
+    </div>
+    <div class="body">
+      <div id="libraryEmpty" style="color:var(--muted);display:none">Brak zapisanych układów.</div>
+      <div id="libraryList" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<!-- informacje o figurach-->
+ <div id="descModal" class="modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
+  <div style="background:white; padding:20px; max-width:600px; max-height:80%; overflow-y:auto; border-radius:8px; position:relative;">
+    <h2 id="descTitle"></h2>
+    <p id="descContent"></p>
+    <button id="closeDescBtn" class="btn">Zamknij</button>
+  </div>
+</div>
+
+<!-- podłączenie JS -->
+<script type="module" src="scripts/main.js"></script>
+</body>
+</html>
