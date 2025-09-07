@@ -344,7 +344,7 @@ const closeDescBtn = document.getElementById('closeDescBtn');
   function svgCoords(x, y){ const r = svg.getBoundingClientRect(); return { x: x - r.left, y: y - r.top }; }
   function lerp(a, b, t){ return a + (b - a) * t; }
   function sanitizePoint(p){
-    return {  x: p.x, y: p.y, name: p.name||'', lead: p.lead||'', follow: p.follow||'', both: p.both||'', link: p.link||'',
+    return {  x: p.x, y: p.y, name: p.name||'', lead: p.lead||'', follow: p.follow||'', both: p.both||'', link: p.videoLink||'',
       bend: Number(p.bend||0), bendPos: Number(p.bendPos ?? 50), color: p.color||'#7dd3fc', description: p.description||'' };
   }
 async function loadCustomFigures() {
@@ -505,7 +505,7 @@ stageSvg.appendChild(rightLine);
     // Panel detali
     if(state.selected>=0){
       const p=state.points[state.selected];
-      selIndex.value=state.selected+1; selName.value=p.name||''; selLead.value=p.lead||''; selFollow.value=p.follow||''; selBoth.value=p.both||''; selLink.value=p.link||''; selColor.value=p.color; bendRange.value=p.bend||0; bendPosRange.value=p.bendPos||50;
+      selIndex.value=state.selected+1; selName.value=p.name||''; selLead.value=p.lead||''; selFollow.value=p.follow||''; selBoth.value=p.both||''; selLink.value=p.videoLink||''; selColor.value=p.color; bendRange.value=p.bend||0; bendPosRange.value=p.bendPos||50;
     }else{
       selIndex.value=selName.value=selLead.value=selFollow.value=selBoth.value=selLink.value=''; selColor.value='#7dd3fc'; bendRange.value=0; bendPosRange.value=50;
     }
@@ -535,7 +535,7 @@ stageSvg.appendChild(rightLine);
   [selName, selLead, selFollow, selBoth, selLink].forEach(el=>el.addEventListener('input', ()=>{
     if(state.selected>=0){
       const p=state.points[state.selected];
-      p.name=selName.value; p.lead=selLead.value; p.follow=selFollow.value; p.both=selBoth.value; p.link=selLink.value;
+      p.name=selName.value; p.lead=selLead.value; p.follow=selFollow.value; p.both=selBoth.value; p.videoLink=selLink.value;
       render();
     }
   }));
@@ -553,7 +553,7 @@ stageSvg.appendChild(rightLine);
   if(p.name && !figures.find(f => f.name === p.name)) {
     figures.push({ 
       name: p.name, color: p.color, description: p.description||'', 
-      lead: p.lead, follow: p.follow, both: p.both, link: p.link 
+      lead: p.lead, follow: p.follow, both: p.both, link: p.videoLink 
     });
   }
   recentFigures = [p.name, ...recentFigures.filter(n => n !== p.name)].slice(0, 10);
@@ -565,7 +565,7 @@ stageSvg.appendChild(rightLine);
   
   saveFigureToCustom({ 
     name: p.name, color: p.color, description: p.description||'', 
-    lead: p.lead, follow: p.follow, both: p.both, link: p.link 
+    lead: p.lead, follow: p.follow, both: p.both, link: p.videoLink 
   });
 };
 

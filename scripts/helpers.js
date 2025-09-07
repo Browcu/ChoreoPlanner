@@ -19,7 +19,7 @@ export function sanitizePoint(p) {
     lead: p.lead||'', 
     follow: p.follow||'', 
     both: p.both||'', 
-    link: p.link||'',
+    link: p.videoLink||'',
     bend: Number(p.bend||0), 
     bendPos: Number(p.bendPos ?? 50), 
     color: p.color||'#7dd3fc', 

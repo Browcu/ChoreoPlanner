@@ -4,7 +4,7 @@ import { state, recentFigures, currentTab, figures, stateTabs, addToRecent } fro
 import { customFigures } from './main.js';
 import { svgCoords, sanitizePoint } from './helpers.js';
 import { render } from './render.js';
-import { updateFigureList, updateLibraryList } from './ui-updates.js';
+import { updateFigureList } from './ui-updates.js';
 import { loadCustomFigures, saveFigureToCustom, loadLibrary, saveCurrentLibrary } from './firebase-api.js';
 
 export function setupEventListeners() {
@@ -40,10 +40,7 @@ export function setupEventListeners() {
   const toggleDragBtn = document.getElementById('toggleDragBtn');
   const toggleSnapBtn = document.getElementById('toggleSnapBtn');
   const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
-  const figureListEl = document.getElementById('figureList');
   const libraryModal = document.getElementById('libraryModal');
-  const libraryList = document.getElementById('libraryList');
-  const libraryEmpty = document.getElementById('libraryEmpty');
   const closeLibBtn = document.getElementById('closeLibBtn');
   const saveCurrentBtn = document.getElementById('saveCurrentBtn');
   const copyShareBtn = document.getElementById('copyShareBtn');
@@ -52,52 +49,51 @@ export function setupEventListeners() {
 
   // ===== PANEL FIGURE EDIT =====
   function setFigureEditMode(isEdit) {
-  state.figureEdit = isEdit;
-  editModeCheckbox.checked = isEdit;
+    state.figureEdit = isEdit;
+    editModeCheckbox.checked = isEdit;
 
-  const inputs = [selName, selLead, selFollow, selBoth, selDesc, selColor];
-  inputs.forEach(el => {
-    el.readOnly = !isEdit;
-    el.disabled = !isEdit;
-    el.style.background = isEdit ? '#fff' : '#2a2a3a';
-    el.style.color = isEdit ? '#000' : '#bbb';
-    el.style.border = isEdit ? '1px solid rgba(0,0,0,0.2)' : '1px solid #555';
-  });
+    const inputs = [selName, selLead, selFollow, selBoth, selDesc, selColor];
+    inputs.forEach(el => {
+      el.readOnly = !isEdit;
+      el.disabled = !isEdit;
+      el.style.background = isEdit ? '#fff' : '#2a2a3a';
+      el.style.color = isEdit ? '#000' : '#bbb';
+      el.style.border = isEdit ? '1px solid rgba(0,0,0,0.2)' : '1px solid #555';
+    });
 
-  bendRange.parentElement.style.display = isEdit ? 'flex' : 'none';
-  bendPosRange.parentElement.style.display = isEdit ? 'flex' : 'none';
+    bendRange.parentElement.style.display = isEdit ? 'flex' : 'none';
+    bendPosRange.parentElement.style.display = isEdit ? 'flex' : 'none';
 
-  const bendLabel = bendRange.parentElement.previousElementSibling;
-  const bendPosLabel = bendPosRange.parentElement.previousElementSibling;
-  if (bendLabel) bendLabel.style.display = isEdit ? 'block' : 'none';
-  if (bendPosLabel) bendPosLabel.style.display = isEdit ? 'block' : 'none';
+    const bendLabel = bendRange.parentElement.previousElementSibling;
+    const bendPosLabel = bendPosRange.parentElement.previousElementSibling;
+    if (bendLabel) bendLabel.style.display = isEdit ? 'block' : 'none';
+    if (bendPosLabel) bendPosLabel.style.display = isEdit ? 'block' : 'none';
 
-  if (isEdit) {
-    selLink.style.display = 'block';
-    selLinkRead.style.display = 'none';
-  } else {
-    selLink.style.display = 'none';
-    selLinkRead.style.display = 'inline-block';
-    selLinkRead.href = selLink.value.trim() || '#';
-    selLinkRead.textContent = selLink.value.trim() || 'Brak linku';
+    if (isEdit) {
+      selLink.style.display = 'block';
+      selLinkRead.style.display = 'none';
+    } else {
+      selLink.style.display = 'none';
+      selLinkRead.style.display = 'inline-block';
+      selLinkRead.href = selLink.value.trim() || '#';
+      selLinkRead.textContent = selLink.value.trim() || 'Brak linku';
+    }
   }
-}
-
 
   // ===== INICJALIZACJA =====
- // inicjalizacja stanu po załadowaniu strony
-window.addEventListener('DOMContentLoaded', () => {
-  setFigureEditMode(false); // start OFF
-  document.querySelectorAll('.tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.tab === stateTabs.current);
+  window.addEventListener('DOMContentLoaded', () => {
+    setFigureEditMode(false);
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.tab === stateTabs.current);
+    });
+    updateFigureList();
   });
-  updateFigureList(); // teraz pokaże tylko ostatnie figury
-});
 
-editModeCheckbox.addEventListener('change', () => {
-  setFigureEditMode(editModeCheckbox.checked);
-});
-setFigureEditMode(false);
+  editModeCheckbox.addEventListener('change', () => {
+    setFigureEditMode(editModeCheckbox.checked);
+  });
+  setFigureEditMode(false);
+
   // ===== SVG EVENTS =====
   svg.addEventListener('pointerdown', e => {
     if (!state.svgEdit) return;
@@ -135,7 +131,7 @@ setFigureEditMode(false);
         p.follow = selFollow.value;
         p.both = selBoth.value;
         p.description = selDesc.value;
-        p.link = selLink.value;
+        p.videoLink = selLink.value;   // 🔥 spójne pole
         p.color = selColor.value;
         render();
       }
@@ -144,17 +140,47 @@ setFigureEditMode(false);
     });
   });
 
-  selColor.addEventListener('input', () => { if (state.selected >= 0 && state.figureEdit) { state.points[state.selected].color = selColor.value; render(); } });
-  bendRange.addEventListener('input', () => { if (state.selected >= 0 && state.figureEdit) { state.points[state.selected].bend = Number(bendRange.value); render(); } });
-  bendPosRange.addEventListener('input', () => { if (state.selected >= 0 && state.figureEdit) { state.points[state.selected].bendPos = Number(bendPosRange.value); render(); } });
+  selColor.addEventListener('input', () => {
+    if (state.selected >= 0 && state.figureEdit) {
+      state.points[state.selected].color = selColor.value;
+      render();
+    }
+  });
+  bendRange.addEventListener('input', () => {
+    if (state.selected >= 0 && state.figureEdit) {
+      state.points[state.selected].bend = Number(bendRange.value);
+      render();
+    }
+  });
+  bendPosRange.addEventListener('input', () => {
+    if (state.selected >= 0 && state.figureEdit) {
+      state.points[state.selected].bendPos = Number(bendPosRange.value);
+      render();
+    }
+  });
 
-  resetBendBtn.addEventListener('click', () => { if (state.selected >= 0 && state.figureEdit) { state.points[state.selected].bend = 0; bendRange.value = 0; render(); } });
-  resetBendPosBtn.addEventListener('click', () => { if (state.selected >= 0 && state.figureEdit) { state.points[state.selected].bendPos = 50; bendPosRange.value = 50; render(); } });
+  resetBendBtn.addEventListener('click', () => {
+    if (state.selected >= 0 && state.figureEdit) {
+      state.points[state.selected].bend = 0;
+      bendRange.value = 0;
+      render();
+    }
+  });
+  resetBendPosBtn.addEventListener('click', () => {
+    if (state.selected >= 0 && state.figureEdit) {
+      state.points[state.selected].bendPos = 50;
+      bendPosRange.value = 50;
+      render();
+    }
+  });
 
   // ===== FIGURE SAVE =====
   updatePointBtn.onclick = async () => {
     const isNewFig = newFigModeCheckbox.checked;
-    if (!state.figureEdit) { alert("Jesteś w trybie odczytu – zmiany nie zostaną zapisane."); return; }
+    if (!state.figureEdit) {
+      alert("Jesteś w trybie odczytu – zmiany nie zostaną zapisane.");
+      return;
+    }
 
     const data = {
       name: selName.value,
@@ -163,7 +189,7 @@ setFigureEditMode(false);
       lead: selLead.value,
       follow: selFollow.value,
       both: selBoth.value,
-      link: selLink.value
+      videoLink: selLink.value   // 🔥 poprawione
     };
 
     if (isNewFig) {
@@ -172,13 +198,16 @@ setFigureEditMode(false);
       else customFigures.unshift(data);
       await saveFigureToCustom(data);
     } else {
-      if (state.selected < 0) { alert("Wybierz punkt na SVG, żeby go edytować!"); return; }
+      if (state.selected < 0) {
+        alert("Wybierz punkt na SVG, żeby go edytować!");
+        return;
+      }
       Object.assign(state.points[state.selected], data);
     }
-addToRecent(data.name);
+
+    addToRecent(data.name);
     render();
     updateFigureList();
-    
   };
 
   // ===== TOOLBAR =====
@@ -203,57 +232,56 @@ addToRecent(data.name);
     setFigureEditMode(false);
   };
 
-  clearBtn.onclick = () => { 
-    if(confirm('Wyczyścić bieżący układ?')){
+  clearBtn.onclick = () => {
+    if (confirm('Wyczyścić bieżący układ?')) {
       state.points = [];
       state.selected = -1;
-      render(); 
-    } 
+      render();
+    }
   };
 
-  closeBtn.onclick = () => { 
-    state.closed = !state.closed; 
-    closeBtn.textContent = state.closed ? 'Otwórz ścieżkę' : 'Zamknij ścieżkę'; 
-    render(); 
+  closeBtn.onclick = () => {
+    state.closed = !state.closed;
+    closeBtn.textContent = state.closed ? 'Otwórz ścieżkę' : 'Zamknij ścieżkę';
+    render();
   };
 
-  editBtn.onclick = () => { 
-    state.svgEdit = !state.svgEdit; 
-    editBtn.classList.toggle('toggled', state.svgEdit); 
+  editBtn.onclick = () => {
+    state.svgEdit = !state.svgEdit;
+    editBtn.classList.toggle('toggled', state.svgEdit);
     if (state.svgEdit) {
-    // przy włączeniu trybu edycji SVG włączamy dodawanie i przesuwanie
-    state.addPoints = true;
-    state.drag = true;
+      state.addPoints = true;
+      state.drag = true;
 
-    toggleAddBtn.textContent = 'Dodawanie punktów: ON';
-    toggleDragBtn.classList.add('toggled');
-    toggleDragBtn.textContent = 'Przesuwanie punktów: ON';
-  }
+      toggleAddBtn.textContent = 'Dodawanie punktów: ON';
+      toggleDragBtn.classList.add('toggled');
+      toggleDragBtn.textContent = 'Przesuwanie punktów: ON';
+    }
   };
 
-  toggleAddBtn.onclick = () => { 
-    state.addPoints = !state.addPoints; 
-    toggleAddBtn.textContent = 'Dodawanie punktów: ' + (state.addPoints ? 'ON' : 'OFF'); 
+  toggleAddBtn.onclick = () => {
+    state.addPoints = !state.addPoints;
+    toggleAddBtn.textContent = 'Dodawanie punktów: ' + (state.addPoints ? 'ON' : 'OFF');
   };
 
-  toggleDragBtn.onclick = () => { 
-    state.drag = !state.drag; 
-    toggleDragBtn.classList.toggle('toggled', state.drag); 
-    toggleDragBtn.textContent = 'Przesuwanie punktów: ' + (state.drag ? 'ON' : 'OFF'); 
+  toggleDragBtn.onclick = () => {
+    state.drag = !state.drag;
+    toggleDragBtn.classList.toggle('toggled', state.drag);
+    toggleDragBtn.textContent = 'Przesuwanie punktów: ' + (state.drag ? 'ON' : 'OFF');
   };
 
-  toggleSnapBtn.onclick = () => { 
-    state.snap = !state.snap; 
-    toggleSnapBtn.textContent = 'Przyciąganie kątów: ' + (state.snap ? 'ON' : 'OFF'); 
+  toggleSnapBtn.onclick = () => {
+    state.snap = !state.snap;
+    toggleSnapBtn.textContent = 'Przyciąganie kątów: ' + (state.snap ? 'ON' : 'OFF');
   };
 
-  deleteSelectedBtn.onclick = () => { 
-    if(state.selected < 0) return; 
-    if(confirm('Na pewno chcesz usunąć wybrany punkt?')) { 
-      state.points.splice(state.selected,1); 
-      state.selected = -1; 
-      render(); 
-    } 
+  deleteSelectedBtn.onclick = () => {
+    if (state.selected < 0) return;
+    if (confirm('Na pewno chcesz usunąć wybrany punkt?')) {
+      state.points.splice(state.selected, 1);
+      state.selected = -1;
+      render();
+    }
   };
 
   // ===== FIGURE LIST TABS =====
@@ -273,8 +301,15 @@ addToRecent(data.name);
   copyShareBtn.onclick = () => { navigator.clipboard.writeText(JSON.stringify(state)); alert('Skopiowano stan do schowka.'); };
 
   // ===== SEARCH & SORT =====
-  searchFigureEl.addEventListener('input', () => { state.figureSearchTerm=searchFigureEl.value.toLowerCase(); updateFigureList(); });
-  sortFigureBtn.addEventListener('click', () => { state.figureSortAsc=!state.figureSortAsc; sortFigureBtn.textContent=state.figureSortAsc?'Sort A→Z':'Sort Z→A'; updateFigureList(); });
+  searchFigureEl.addEventListener('input', () => {
+    state.figureSearchTerm = searchFigureEl.value.toLowerCase();
+    updateFigureList();
+  });
+  sortFigureBtn.addEventListener('click', () => {
+    state.figureSortAsc = !state.figureSortAsc;
+    sortFigureBtn.textContent = state.figureSortAsc ? 'Sort A→Z' : 'Sort Z→A';
+    updateFigureList();
+  });
 
   // ===== OKNO / RESIZE =====
   window.addEventListener('resize', render);
@@ -288,29 +323,23 @@ addToRecent(data.name);
   }
 
   // ===== WYBIERANIE FIGURY =====
-function selectFigure(figureData) {
-  selName.value = figureData.name || '';
-  selDesc.value = figureData.description || '';
-  selLink.value = figureData.videoLink || '';
-  selColor.value = figureData.color || '';
+  window.selectFigure = function(figureData) {
+    selName.value = figureData.name || '';
+    selDesc.value = figureData.description || '';
+    selLead.value = figureData.lead || '';
+    selFollow.value = figureData.follow || '';
+    selBoth.value = figureData.both || '';
+    selColor.value = figureData.color || '';
+    selLink.value = figureData.videoLink || '';
 
-  // W trybie tylko odczytu panel ustawiony jest w renderze
-  state.selected = -1;
-  setFigureEditMode(false);
-  render();
+    state.selected = -1;
+    setFigureEditMode(false);
+    render();
+
+    selLinkRead.href = figureData.videoLink || '#';
+    selLinkRead.textContent = figureData.videoLink ? 'Zobacz wideo' : 'Brak linku';
+
+    addToRecent(figureData.name);
+    updateFigureList();
+  };
 }
-
-window.selectFigure = function(figureData) {
-  selName.value = figureData.name || '';
-  selDesc.value = figureData.description || '';
-  selLink.value = figureData.videoLink || '';
-  selColor.value = figureData.color || '';
-
-  state.selected = -1;
-  setFigureEditMode(false);
-  render();
-
-  // dodaj do ostatnich i odśwież listę
-  addToRecent(figureData.name);
-  updateFigureList();
-};}

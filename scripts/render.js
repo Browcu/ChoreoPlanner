@@ -102,8 +102,7 @@ export function render(){
     }
   }
 
-  // Points
-  // W render.js, w sekcji "Points"
+ // Points
 state.points.forEach((pt,i)=>{
   const nodeTag=(i===0)?'polygon':'circle';
   const c=document.createElementNS('http://www.w3.org/2000/svg',nodeTag);
@@ -122,42 +121,33 @@ state.points.forEach((pt,i)=>{
   c.style.fill=pt.color; 
   svg.appendChild(c);
 
-  // Tooltip
+  // Tooltip – pokazuje tylko przy hover
+  const tooltip = document.getElementById('tooltip');
   c.addEventListener('pointerover', e=>{
-    const tooltip = document.getElementById('tooltip');
-    if(tooltip){
-      tooltip.textContent = pt.name || `(punkt ${i+1})`;
-      tooltip.style.display = 'block';
-      tooltip.style.left = (e.pageX + 10) + 'px';
-      tooltip.style.top = (e.pageY + 10) + 'px';
-    }
+    if(!tooltip) return;
+    tooltip.textContent = pt.name || `(punkt ${i+1})`;
+    tooltip.style.display='block';
+    tooltip.style.left = (e.pageX + 10) + 'px';
+    tooltip.style.top = (e.pageY + 10) + 'px';
   });
   c.addEventListener('pointermove', e=>{
-    const tooltip = document.getElementById('tooltip');
-    if(tooltip && tooltip.style.display==='block'){
-      tooltip.style.left = (e.pageX + 10) + 'px';
-      tooltip.style.top = (e.pageY + 10) + 'px';
-    }
+    if(!tooltip) return;
+    tooltip.style.left = (e.pageX + 10) + 'px';
+    tooltip.style.top = (e.pageY + 10) + 'px';
   });
-  c.addEventListener('pointerout', e=>{
-    const tooltip = document.getElementById('tooltip');
-    if(tooltip) tooltip.style.display='none';
+  c.addEventListener('pointerout', ()=>{
+    if(!tooltip) return;
+    tooltip.style.display='none';
   });
-
-  // Label (jeżeli wolisz, można go ukryć i pokazywać tylko tooltip)
-  const t=document.createElementNS('http://www.w3.org/2000/svg','text');
-  t.setAttribute('x',pt.x+12); 
-  t.setAttribute('y',pt.y-12); 
-  t.setAttribute('class','label'); 
-  t.textContent=pt.name||(i+1);
-  svg.appendChild(t);
 });
+
+  
 
 
   // Panel detali
   if(state.selected>=0){
     const p=state.points[state.selected];
-    selIndex.value=state.selected+1; selName.value=p.name||''; selLead.value=p.lead||''; selFollow.value=p.follow||''; selBoth.value=p.both||''; selLink.value=p.link||''; selColor.value=p.color; bendRange.value=p.bend||0; bendPosRange.value=p.bendPos||50;
+    selIndex.value=state.selected+1; selName.value=p.name||''; selLead.value=p.lead||''; selFollow.value=p.follow||''; selBoth.value=p.both||''; selLink.value=p.videoLink||''; selColor.value=p.color; bendRange.value=p.bend||0; bendPosRange.value=p.bendPos||50;
   }else{
     selIndex.value=selName.value=selLead.value=selFollow.value=selBoth.value=selLink.value=''; selColor.value='#7dd3fc'; bendRange.value=0; bendPosRange.value=50;
   }
