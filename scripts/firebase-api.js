@@ -35,30 +35,32 @@ const db = getDatabase(app);
 // Wczytanie biblioteki i subskrypcja zmian w czasie rzeczywistym
 export function loadLibrary() {
   const libRef = ref(db, 'library');
-  onValue(libRef, snapshot => {
+  onValue(libRef, (snapshot) => {
     const data = snapshot.val();
     state.library = data ? Object.values(data) : [];
     updateLibraryList();
   });
 }
 
-// Zapis bieżącej biblioteki do Firebase
+// Zapis bieżącej biblioteki do Firebase z pytaniem o nazwę
 export async function saveCurrentLibrary() {
-  if (!state.library || state.library.length === 0) {
-    alert("Brak układów do zapisania");
+  if (!state.points || state.points.length === 0) {
+    alert("Brak punktów do zapisania.");
     return;
   }
 
+  // Podanie nazwy układu
   let name = prompt("Podaj nazwę układu:", state.name || "Nowy układ");
   if (!name) return;
 
   const copy = { ...state, name };
 
-  // Sprawdzenie, czy już istnieje
+  // Sprawdzenie czy już istnieje układ o tej nazwie
   const existing = state.library.find(l => l.name === name);
   if (existing && !confirm(`Układ "${name}" już istnieje. Nadpisać go?`)) return;
 
   try {
+    // Zapis pod kluczem nazwy
     await set(ref(db, `library/${name}`), copy);
     console.log("✅ Zapisano bibliotekę do Firebase:", name);
     state.name = name;
@@ -81,7 +83,7 @@ export async function loadCustomFigures() {
   try {
     const snapshot = await get(figsRef);
     const data = snapshot.val();
-    return data ? Object.values(data) : [];
+    return Array.isArray(data) ? data : [];
   } catch (err) {
     console.error("❌ Błąd wczytywania własnych figur:", err);
     return [];
@@ -90,13 +92,16 @@ export async function loadCustomFigures() {
 
 // Zapis pojedynczej figury
 export async function saveFigureToCustom(figData) {
-  if (!figData.name) {
-    alert("Figura musi mieć nazwę!");
-    return;
-  }
-
+  const figsRef = ref(db, 'customFigures');
   try {
-    await set(ref(db, `customFigures/${figData.name}`), figData);
+    const snapshot = await get(figsRef);
+    const arr = Array.isArray(snapshot.val()) ? snapshot.val() : [];
+
+    const idx = arr.findIndex(f => f.name === figData.name);
+    if (idx >= 0) arr[idx] = figData;
+    else arr.push(figData);
+
+    await set(figsRef, arr);
     console.log("✅ Zapisano figurę w Firebase:", figData.name);
   } catch (err) {
     console.error("❌ Błąd zapisu figury:", err);
@@ -106,8 +111,12 @@ export async function saveFigureToCustom(figData) {
 
 // Usunięcie figury z Firebase
 export async function deleteCustomFigure(name) {
+  const figsRef = ref(db, 'customFigures');
   try {
-    await set(ref(db, `customFigures/${name}`), null);
+    const snapshot = await get(figsRef);
+    let arr = Array.isArray(snapshot.val()) ? snapshot.val() : [];
+    arr = arr.filter(f => f.name !== name);
+    await set(figsRef, arr);
     console.log("✅ Usunięto figurę z Firebase:", name);
   } catch (err) {
     console.error("❌ Błąd przy usuwaniu figury:", err);
