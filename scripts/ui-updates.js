@@ -2,42 +2,39 @@
 import { state, recentFigures, figures, stateTabs, addToRecent } from './state.js';
 import { customFigures } from './main.js';
 import { render } from './render.js';
-import { loadLibrary } from './api.js';
+import { loadLibrary, deleteCustomFigure, saveCurrentLibrary } from './firebase-api.js';
 
-export function updateFigureList() {
+// =======================
+// LISTA FIGUR
+// =======================
+export async function updateFigureList() {
   let listData;
 
+  // ===== DEBUG =====
   console.log('=== DEBUG OSTATNIO UŻYWANE ===');
   console.log('Aktywna zakładka:', stateTabs.current);
   console.log('Recent figures (nazwy):', recentFigures);
   console.log('Wszystkie figury (oficjalne):', figures.map(f => f.name));
   console.log('Własne figury:', customFigures.map(f => f.name));
 
+  // ===== Wybór listy wg zakładki =====
   if (stateTabs.current === 'recent') {
     const allFigures = [...figures, ...customFigures];
-    console.log('Połączone wszystkie figury:', allFigures.map(f => f.name));
-    
     listData = recentFigures
-      .map(name => {
-        const found = allFigures.find(f => f.name === name);
-        console.log(`Szukam "${name}":`, found ? 'ZNALEZIONO' : 'NIE ZNALEZIONO');
-        return found;
-      })
+      .map(name => allFigures.find(f => f.name === name))
       .filter(Boolean);
-      
-    console.log('Wynikowa lista ostatnich:', listData.map(f => f.name));
-    
   } else if (stateTabs.current === 'custom') {
     listData = customFigures.slice();
   } else {
     listData = figures.slice();
   }
 
-  // Reszta kodu pozostaje bez zmian...
+  // ===== Filtr wyszukiwania =====
   if (state.figureSearchTerm) {
     listData = listData.filter(f => f.name.toLowerCase().includes(state.figureSearchTerm));
   }
 
+  // ===== Sortowanie =====
   listData.sort((a, b) => {
     if (a.name < b.name) return state.figureSortAsc ? -1 : 1;
     if (a.name > b.name) return state.figureSortAsc ? 1 : -1;
@@ -47,6 +44,7 @@ export function updateFigureList() {
   const figureListEl = document.getElementById('figureList');
   figureListEl.innerHTML = '';
 
+  // ===== Tworzenie elementów listy =====
   listData.forEach(f => {
     const li = document.createElement('li');
     li.className = 'item';
@@ -54,6 +52,7 @@ export function updateFigureList() {
     li.style.alignItems = 'center';
     li.style.justifyContent = 'space-between';
 
+    // Lewa część: nazwa + kolor
     const leftSpan = document.createElement('span');
     leftSpan.style.display = 'flex';
     leftSpan.style.alignItems = 'center';
@@ -76,13 +75,14 @@ export function updateFigureList() {
         });
         render();
         updateFigureList();
-         addToRecent(f.name);
+        addToRecent(f.name);
       } else {
         alert('Wybierz punkt na parkiecie, aby zastosować figurę.');
       }
     };
     li.appendChild(leftSpan);
 
+    // Prawa część: akcje
     const actionsDiv = document.createElement('div');
     actionsDiv.className = 'actions';
 
@@ -127,21 +127,17 @@ export function updateFigureList() {
     deleteBtn.style.background = '#ef4444';
     deleteBtn.style.color = '#fff';
     deleteBtn.textContent = 'Usuń';
-    deleteBtn.onclick = (e) => {
+    deleteBtn.onclick = async (e) => {
       e.stopPropagation();
-      if (confirm(`Na pewno chcesz usunąć figurę "${f.name}"?`)) {
-        if (stateTabs.current === 'custom') {
-          const index = customFigures.findIndex(c => c.name === f.name);
-          if (index !== -1) customFigures.splice(index, 1);
+      if (!confirm(`Na pewno chcesz usunąć figurę "${f.name}"?`)) return;
 
-          fetch('/customFigures/delete', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({name:f.name})
-          });
-        }
-        updateFigureList();
+      if (stateTabs.current === 'custom') {
+        const index = customFigures.findIndex(c => c.name === f.name);
+        if (index !== -1) customFigures.splice(index, 1);
+        await deleteCustomFigure(f.name); // Firebase
       }
+
+      updateFigureList();
     };
     actionsDiv.appendChild(deleteBtn);
 
@@ -150,8 +146,10 @@ export function updateFigureList() {
   });
 }
 
-// Lista biblioteki układów
-export function updateLibraryList() {
+// =======================
+// LISTA BIBLIOTEKI UKŁADÓW
+// =======================
+export async function updateLibraryList() {
   const libraryList = document.getElementById('libraryList');
   const libraryEmpty = document.getElementById('libraryEmpty');
   
@@ -191,23 +189,9 @@ export function updateLibraryList() {
     deleteBtn.onclick = async (e) => {
       e.stopPropagation();
       if (!confirm(`Na pewno chcesz usunąć układ "${d.name}" z biblioteki?`)) return;
-      try {
-        const res = await fetch('/library/delete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: d.name })
-        });
-        const result = await res.json();
-        if (result.ok) {
-          alert('Usunięto układ z biblioteki.');
-          await loadLibrary();
-        } else {
-          alert('Błąd przy usuwaniu układu.');
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Błąd przy usuwaniu układu.');
-      }
+      state.library = state.library.filter(l => l.name !== d.name);
+      await saveCurrentLibrary();  // zapis do Firebase
+      await loadLibrary();          // odświeżenie listy
     };
     div.appendChild(deleteBtn);
 

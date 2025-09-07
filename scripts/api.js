@@ -1,4 +1,4 @@
-// scripts/api.js
+/* // scripts/api.js
 import { state } from './state.js';
 import { updateLibraryList } from './ui-updates.js';
 
@@ -76,4 +76,4 @@ export async function saveCurrentLibrary(e) {
     console.error('Błąd zapisu układu:', err);
     alert('Błąd zapisu układu.');
   }
-}
+} */

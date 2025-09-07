@@ -5,7 +5,7 @@ import { customFigures } from './main.js';
 import { svgCoords, sanitizePoint } from './helpers.js';
 import { render } from './render.js';
 import { updateFigureList, updateLibraryList } from './ui-updates.js';
-import { loadCustomFigures, saveFigureToCustom, loadLibrary, saveCurrentLibrary } from './api.js';
+import { loadCustomFigures, saveFigureToCustom, loadLibrary, saveCurrentLibrary } from './firebase-api.js';
 
 export function setupEventListeners() {
   // ===== ELEMENTY DOM =====
