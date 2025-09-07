@@ -3,6 +3,7 @@ import { setupEventListeners } from './events.js';
 import { render } from './render.js';
 import { loadCustomFigures } from './api.js';
 import { updateFigureList } from './ui-updates.js';
+import { saveCurrentLibrary, loadLibrary } from './firebase-api.js';
 
 // Eksportujemy zmienne, które mogą być używane w innych modułach
 export { state, recentFigures, currentTab, figures };
