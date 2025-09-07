@@ -288,35 +288,29 @@ addToRecent(data.name);
   }
 
   // ===== WYBIERANIE FIGURY =====
-  function selectFigure(figureData) {
-    selName.value = figureData.name;
-    selLead.value = figureData.lead;
-    selFollow.value = figureData.follow;
-    selBoth.value = figureData.both;
-    selDesc.value = figureData.description;
-    selLink.value = figureData.link;
-    selColor.value = figureData.color;
+function selectFigure(figureData) {
+  selName.value = figureData.name || '';
+  selDesc.value = figureData.description || '';
+  selLink.value = figureData.videoLink || '';
+  selColor.value = figureData.color || '';
 
-    state.selected = -1;
-    setFigureEditMode(false);
-    render();
-  }
+  // W trybie tylko odczytu panel ustawiony jest w renderze
+  state.selected = -1;
+  setFigureEditMode(false);
+  render();
+}
 
-  window.selectFigure = function(figureData) {
-  selName.value = figureData.name;
-  selLead.value = figureData.lead;
-  selFollow.value = figureData.follow;
-  selBoth.value = figureData.both;
-  selDesc.value = figureData.description;
-  selLink.value = figureData.link;
-  selColor.value = figureData.color;
+window.selectFigure = function(figureData) {
+  selName.value = figureData.name || '';
+  selDesc.value = figureData.description || '';
+  selLink.value = figureData.videoLink || '';
+  selColor.value = figureData.color || '';
 
   state.selected = -1;
   setFigureEditMode(false);
   render();
 
-  // dodaj do ostatnich
+  // dodaj do ostatnich i odśwież listę
   addToRecent(figureData.name);
   updateFigureList();
-};
-}
+};}

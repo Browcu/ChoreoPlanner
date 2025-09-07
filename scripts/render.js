@@ -103,19 +103,56 @@ export function render(){
   }
 
   // Points
-  state.points.forEach((pt,i)=>{
-    const nodeTag=(i===0)?'polygon':'circle';
-    const c=document.createElementNS('http://www.w3.org/2000/svg',nodeTag);
-    if(i===0){
-      const size=14; const points=`${pt.x},${pt.y-size/2} ${pt.x-size/2},${pt.y+size/2} ${pt.x+size/2},${pt.y+size/2}`;
-      c.setAttribute('points',points); c.setAttribute('class','first-dot'+(state.selected===i?' sel':''));
-    }else{ c.setAttribute('cx',pt.x); c.setAttribute('cy',pt.y); c.setAttribute('r',10); c.setAttribute('class','dot'+(state.selected===i?' sel':'')); }
-    c.dataset.index=i; c.style.fill=pt.color; svg.appendChild(c);
+  // W render.js, w sekcji "Points"
+state.points.forEach((pt,i)=>{
+  const nodeTag=(i===0)?'polygon':'circle';
+  const c=document.createElementNS('http://www.w3.org/2000/svg',nodeTag);
+  if(i===0){
+    const size=14; 
+    const points=`${pt.x},${pt.y-size/2} ${pt.x-size/2},${pt.y+size/2} ${pt.x+size/2},${pt.y+size/2}`;
+    c.setAttribute('points',points); 
+    c.setAttribute('class','first-dot'+(state.selected===i?' sel':''));
+  } else { 
+    c.setAttribute('cx',pt.x); 
+    c.setAttribute('cy',pt.y); 
+    c.setAttribute('r',10); 
+    c.setAttribute('class','dot'+(state.selected===i?' sel':'')); 
+  }
+  c.dataset.index=i; 
+  c.style.fill=pt.color; 
+  svg.appendChild(c);
 
-    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
-    t.setAttribute('x',pt.x+12); t.setAttribute('y',pt.y-12); t.setAttribute('class','label'); t.textContent=pt.name||(i+1);
-    svg.appendChild(t);
+  // Tooltip
+  c.addEventListener('pointerover', e=>{
+    const tooltip = document.getElementById('tooltip');
+    if(tooltip){
+      tooltip.textContent = pt.name || `(punkt ${i+1})`;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (e.pageX + 10) + 'px';
+      tooltip.style.top = (e.pageY + 10) + 'px';
+    }
   });
+  c.addEventListener('pointermove', e=>{
+    const tooltip = document.getElementById('tooltip');
+    if(tooltip && tooltip.style.display==='block'){
+      tooltip.style.left = (e.pageX + 10) + 'px';
+      tooltip.style.top = (e.pageY + 10) + 'px';
+    }
+  });
+  c.addEventListener('pointerout', e=>{
+    const tooltip = document.getElementById('tooltip');
+    if(tooltip) tooltip.style.display='none';
+  });
+
+  // Label (jeżeli wolisz, można go ukryć i pokazywać tylko tooltip)
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('x',pt.x+12); 
+  t.setAttribute('y',pt.y-12); 
+  t.setAttribute('class','label'); 
+  t.textContent=pt.name||(i+1);
+  svg.appendChild(t);
+});
+
 
   // Panel detali
   if(state.selected>=0){
